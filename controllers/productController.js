@@ -6,23 +6,16 @@ var getValueForNextSequence = require('../util/util').getValueForNextSequence;
 
 var getProducts = function (req, res) {
 
-    var perPage = parseInt(req.query.perPage);
-    var pageNum = parseInt(req.query.pageNum);
+    var perPage = parseInt(req.query.perPage) || 10;
+    var pageNum = parseInt(req.query.pageNum) || 1;
 
-    var query = _.pick(req.query, "name", "id");
+    var query = _.pick(req.query, "name", "id", "category.name");
     if (query.id) {
         query._id = +query.id;
         delete query.id;
     }
 
     console.log(query);
-
-    if (!perPage) {
-        perPage = 10;
-    }
-    if (!pageNum) {
-        pageNum = 1;
-    }
 
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
@@ -40,7 +33,9 @@ var getProducts = function (req, res) {
                         "as": "category"
                     }
                 },
+                { "$unwind" : "$category" },
                 { "$match": query },
+                
             ])
             .skip(pageNum * perPage - perPage)
             .limit(perPage)
@@ -104,7 +99,7 @@ var putProduct = function (req, res) {
             }, {
                 returnOriginal: false
             }).then((result) => {
-                if(result.value === null) {
+                if (result.value === null) {
                     return res.status(400).send();
                 }
                 res.send({

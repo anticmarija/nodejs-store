@@ -33,7 +33,6 @@ var getUsers = function (req, res) {
 //NOT IMPLEMENTED AUTH YET!!!!
 var postUser = function (req, res) {
     var body = _.pick(req.body, ['email', 'status', 'password', 'username', 'roles']);
-    console.log(body);
     var user = new User(req.body);
 
     user.save().then(() => {

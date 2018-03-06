@@ -2,34 +2,7 @@ const mongoDBPath = "mongodb://localhost:27017/Store";
 const _ = require('lodash');
 
 var MongoClient = require('mongodb');
-
-function getValueForNextSequence(sequenceOfName, callback) {
-
-    var index;
-    MongoClient.connect(mongoDBPath, function (err, client) {
-        if (!err) {
-            console.log("We are connected");
-        }
-        const db = client.db('Store');
-
-        db.collection('counter').findOneAndUpdate(
-            {
-                "_id": sequenceOfName
-            }, {
-                $inc: {
-                    "sequence_value": 1
-                }
-            }, {
-                returnNewDocument: false
-            }
-        ).then((doc) => {
-            callback(doc.value.sequence_value);
-        })
-            .catch((e) => {
-                console.log(e);
-            })
-    });
-}
+var getValueForNextSequence = require('../util/util').getValueForNextSequence;
 
 var getCategory = function (req, res) {
 
