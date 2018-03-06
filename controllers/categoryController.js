@@ -3,35 +3,51 @@ const _ = require('lodash');
 
 var MongoClient = require('mongodb');
 
+function getValueForNextSequence(sequenceOfName, callback) {
 
-function getValueForNextSequence(sequenceOfName) {
-
+    var index;
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
             console.log("We are connected");
         }
         const db = client.db('Store');
 
-        var sequenceDoc = db.collection('counter').findAndModify({
-            query: { _id: sequenceOfName },
-            update: { $inc: { sequence_value: 1 } },
-            new: true
-        });
-
-        return sequenceDoc.sequence_value;
+        db.collection('counter').findOneAndUpdate(
+            {
+                "_id": sequenceOfName
+            }, {
+                $inc: {
+                    "sequence_value": 1
+                }
+            }, {
+                returnNewDocument: false
+            }
+        ).then((doc) => {
+            callback(doc.value.sequence_value);
+        })
+            .catch((e) => {
+                console.log(e);
+            })
     });
 }
 
-
-
 var getCategory = function (req, res) {
-    var perPage = req.query.perPage;
+
+    var name = _.pick(req.query, "name");
 
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
             console.log("We are connected");
         }
         const db = client.db('Store');
+
+        db.collection('category').find(name).toArray()
+            .then((docs) => {
+                res.send(docs)
+            })
+            .catch((e) => {
+                res.status(400).send(e);
+            })
 
         client.close();
     });
@@ -46,14 +62,9 @@ var postCategory = function (req, res) {
         }
         const db = client.db('Store');
 
-        ////get id auto increment!!!
-
-        var last;
-        db.collection('category').find().toArray().then((docs) => {
-            last = parseInt(docs[docs.length - 1]._id) + 1;
-
+        getValueForNextSequence('category_id', function (id) {
             db.collection('category').insertOne({
-                "_id": last,
+                "_id": (+id+1),
                 'name': body.name,
                 'description': body.description
             }).then((cat) => {
@@ -66,14 +77,9 @@ var postCategory = function (req, res) {
             }).catch((e) => {
                 res.send(e);
             })
-        })
-            .catch((err) => {
-                console.log(err);
-            });
+        });
 
-    });
-
-
+    })
 }
 
 var deleteCategory = function (req, res) {
@@ -86,7 +92,7 @@ var deleteCategory = function (req, res) {
         const db = client.db('Store');
 
         db.collection('category').findOneAndDelete({
-            _id:parseInt(id)
+            _id: parseInt(id)
         }).then((results) => {
             res.status(204).send();
         }).catch((err) => {
