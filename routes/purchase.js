@@ -8,7 +8,7 @@ var {authenticateAdmin} = require('../middleware/authenticateAdmin');
 
 var purchaseCtrl = require('../controllers/purchaseController');
 
-router.get('/', authenticateAdmin, purchaseCtrl.getPurchase);
+router.get('/', authenticate, purchaseCtrl.getPurchase);
 
 router.post('/', authenticate, purchaseCtrl.postPurchase);
 

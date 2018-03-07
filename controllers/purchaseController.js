@@ -23,7 +23,32 @@ var getPurchase = function (req, res) {
     var perPage = Number(req.query.perPage) || 10;
     var query = _.pick(req.query, 'userName', 'productId', 'dateFrom', 'dateTo');
 
-    Purchase.find(query)
+    if (req.user.roles.indexOf("ADMIN") === -1) {
+        query.userName = req.user.username;
+    }
+    let query1 = {};
+
+    if (query.userName) query1.userName = query.userName;
+    if (query.productId) query1.productId = query.productId;
+
+
+    if (query.dateFrom !== undefined || query.dateTo !== undefined) {
+        query1.purchaseDate = {}
+    }
+
+    if (query.dateFrom) {
+        var from = new Date(query.dateFrom).toISOString();
+        query1.purchaseDate.$gte = from;
+    }
+
+    if (query.dateTo) {
+        var to = new Date(query.dateTo).toISOString();
+        query1.purchaseDate.$lte = to;
+    }
+
+    console.log(query1);
+
+    Purchase.find(query1)
         .skip(pageNum * perPage - perPage)
         .limit(perPage)
         .then((data) => {
@@ -52,9 +77,6 @@ Response example:
         "message": "Purchase successfuly made."
     }
 }*/
-
-
-
 
 var postPurchase = function (req, res) {
     var body = _.pick(req.body, ['purchaseDate', 'username', 'productId', 'quantity']);
