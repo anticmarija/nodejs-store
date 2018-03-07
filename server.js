@@ -6,11 +6,12 @@ var app = express();
 
 app.use(bodyParser.json());
 
-
 app.use('/store/product', require('./routes/product'));
 app.use('/store/category', require('./routes/category'));
 app.use('/store/user', require('./routes/user'));
 app.use('/store/purchase', require('./routes/purchase'));
+
+app.use('/store/auth/authenticateuser', require('./routes/login'));
 
 
 app.listen(8000, () => {

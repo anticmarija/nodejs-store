@@ -1,6 +1,8 @@
 var { User } = require('../models/user');
 var _ = require('lodash');
 var { mongoose } = require('../db/mongoose');
+var bcrypt = require('bcryptjs');
+
 
 var getUsers = function (req, res) {
     var perPage = req.query.perPage;
@@ -33,23 +35,27 @@ var getUsers = function (req, res) {
 //NOT IMPLEMENTED AUTH YET!!!!
 var postUser = function (req, res) {
     var body = _.pick(req.body, ['email', 'status', 'password', 'username', 'roles']);
-    var user = new User(req.body);
 
-    user.save().then(() => {
-        // return user.generateAuthToken();
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(body.password, salt, (err, hash) => {
+            body.password = hash;
+            console.log(body);
 
-        res.json({
-            "data": {
-                "message": "User successfully created."
-            }
-        }).send();
-    })
-        // .then((token) => {
-        //     res.header('x-auth', token).send(user);
-        // })
-        .catch((e) => {
-            res.status(400).send(e);
+            var user = new User(body);
+
+            user.save().then(() => {
+                res.json({
+                    "data": {
+                        "message": "User successfully created."
+                    }
+                }).send();
+            })
+
+                .catch((e) => {
+                    res.status(400).send(e);
+                });
         });
+    })
 
 };
 

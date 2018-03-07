@@ -10,6 +10,8 @@ var getProducts = function (req, res) {
     var pageNum = parseInt(req.query.pageNum) || 1;
 
     var query = _.pick(req.query, "name", "id", "category.name");
+
+
     if (query.id) {
         query._id = +query.id;
         delete query.id;
@@ -33,9 +35,9 @@ var getProducts = function (req, res) {
                         "as": "category"
                     }
                 },
-                { "$unwind" : "$category" },
+                { "$unwind": "$category" },
                 { "$match": query },
-                
+
             ])
             .skip(pageNum * perPage - perPage)
             .limit(perPage)
