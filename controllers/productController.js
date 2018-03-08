@@ -16,23 +16,8 @@ var getProducts = function (req, res) {
         delete query.id;
     }
 
-    // let niz = [];
-
-    // query["category.name"].forEach(element => {
-    //     niz.push({
-    //         "category.name": element 
-    //     })
-    // });
-
-
     console.log(query);
 
-    // let query1 = {
-    //     name: query.name,
-    //     _id: query.id,
-    //     $or: niz
-    // }
-    console.log(query1)
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
             console.log("We are connected");

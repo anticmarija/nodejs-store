@@ -23,12 +23,14 @@ var getPurchase = function (req, res) {
     var perPage = Number(req.query.perPage) || 10;
     var query = _.pick(req.query, 'userName', 'productId', 'dateFrom', 'dateTo');
 
-    if (req.user.roles.indexOf("ADMIN") === -1) {
-        query.userName = req.user.username;
-    }
     let query1 = {};
 
-    if (query.userName) query1.userName = query.userName;
+    if (req.user.roles.indexOf("ADMIN") === -1) {
+        query1.userName = req.user.username;
+    }
+    
+    if (query.userName && req.user.roles.indexOf("ADMIN") > -1) query1.userName = query.userName;
+    
     if (query.productId) query1.productId = query.productId;
 
 
