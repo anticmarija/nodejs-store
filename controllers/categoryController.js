@@ -8,6 +8,7 @@ var getCategory = function (req, res) {
 
     var name = _.pick(req.query, "name");
 
+    console.log(name);
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
             console.log("We are connected");
