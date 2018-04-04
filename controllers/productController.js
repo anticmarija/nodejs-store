@@ -4,6 +4,24 @@ const _ = require('lodash');
 var MongoClient = require('mongodb');
 var getValueForNextSequence = require('../util/util').getValueForNextSequence;
 
+var countProducts = function(req, res) {
+    MongoClient.connect(mongoDBPath, function (err, client) {
+        if (!err) {
+            console.log("We are connected");
+        }
+        const db = client.db('Store');
+
+        db.collection('product')
+           .find()
+           .count()
+            .then((docs) => {
+                res.send({num : docs});
+            })
+
+        client.close();
+    });
+}
+
 var getProducts = function (req, res) {
 
     var perPage = parseInt(req.query.perPage) || 10;
@@ -15,8 +33,6 @@ var getProducts = function (req, res) {
         query._id = +query.id;
         delete query.id;
     }
-
-    console.log(query);
 
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
@@ -34,9 +50,7 @@ var getProducts = function (req, res) {
                         "as": "category"
                     }
                 },
-                { "$unwind": "$category" },
-                { "$match": query },
-
+                { "$match": query }
             ])
             .skip(pageNum * perPage - perPage)
             .limit(perPage)
@@ -138,5 +152,6 @@ module.exports = {
     getProducts,
     postProduct,
     putProduct,
-    deleteProduct
+    deleteProduct,
+    countProducts
 }

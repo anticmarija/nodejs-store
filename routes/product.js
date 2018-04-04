@@ -9,6 +9,8 @@ var {authenticateAdmin} = require('../middleware/authenticateAdmin');
 
 router.get('/', productCtrl.getProducts);
 
+router.get('/count', productCtrl.countProducts);
+
 router.post('/', authenticateAdmin, productCtrl.postProduct);
 
 router.put('/:id', authenticateAdmin, productCtrl.putProduct);
