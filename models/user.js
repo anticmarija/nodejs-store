@@ -15,10 +15,6 @@ var UserSchema = new mongoose.Schema({
             message: '{VALUE} is not a valid email'
         }
     },
-    status: {
-        type: String,
-        required: true
-    },
     password: {
         type: String,
         required: true,
@@ -39,12 +35,12 @@ var UserSchema = new mongoose.Schema({
 });
 
 
-UserSchema.methods.toJSON = function() {
+UserSchema.methods.toJSON = function () {
     var user = this;
 
     var userObject = user.toObject();
 
-    return _.pick(userObject, ['_id', "email", "username", "status","roles"])
+    return _.pick(userObject, ['_id', "email", "username", "status", "roles"])
 };
 
 UserSchema.methods.generateAuthToken = function () {
@@ -53,34 +49,34 @@ UserSchema.methods.generateAuthToken = function () {
     var access = 'auth';
 
     var token = jwt.sign(
-        { _id: this._id.toHexString(), username:user.username, access },
+        { _id: this._id.toHexString(), username: user.username, access },
         config.secret)
         .toString();
 
     return token;
 }
 
-UserSchema.statics.findByToken = function(token) {
-	var decoded;
-    
-        try {
-            decoded = jwt.verify(token, config.secret);
-        } catch (err) {
-            console.log("Error in authUser:", err);
-            return Promise.reject();
-        }
-    
-        return this.findOne({
-            _id: decoded._id,
-            username: decoded.username
-        });
+UserSchema.statics.findByToken = function (token) {
+    var decoded;
+
+    try {
+        decoded = jwt.verify(token, config.secret);
+    } catch (err) {
+        console.log("Error in authUser:", err);
+        return Promise.reject();
+    }
+
+    return this.findOne({
+        _id: decoded._id,
+        username: decoded.username
+    });
 }
 
 
 UserSchema.statics.findByCredentials = function (username, password) {
     var User = this;
 
-    return User.findOne({username}).then((user) => {
+    return User.findOne({ username }).then((user) => {
         console.log(user);
         if (!user) {
             console.log("!user");

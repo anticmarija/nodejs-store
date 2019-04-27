@@ -9,10 +9,10 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
-app.use('/store/product', require('./routes/product'));
-app.use('/store/category', require('./routes/category'));
-app.use('/store/user', require('./routes/user'));
-app.use('/store/purchase', require('./routes/purchase'));
+app.use('/store/products', require('./routes/product'));
+app.use('/store/categories', require('./routes/category'));
+app.use('/store/users', require('./routes/user'));
+app.use('/store/purchases', require('./routes/purchase'));
 
 app.use('/store/auth/authenticateuser', require('./routes/login'));
 

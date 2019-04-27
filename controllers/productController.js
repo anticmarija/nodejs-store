@@ -4,18 +4,18 @@ const _ = require('lodash');
 var MongoClient = require('mongodb');
 var getValueForNextSequence = require('../util/util').getValueForNextSequence;
 
-var countProducts = function(req, res) {
+var countProducts = function (req, res) {
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
             console.log("We are connected");
         }
         const db = client.db('Store');
 
-        db.collection('product')
-           .find()
-           .count()
+        db.collection('products')
+            .find()
+            .count()
             .then((docs) => {
-                res.send({num : docs});
+                res.send({ num: docs });
             })
 
         client.close();
@@ -23,16 +23,7 @@ var countProducts = function(req, res) {
 }
 
 var getProducts = function (req, res) {
-
-    var perPage = parseInt(req.query.perPage) || 10;
-    var pageNum = parseInt(req.query.pageNum) || 1;
-
-    var query = _.pick(req.query, "name", "id", "category.name");
-
-    if (query.id) {
-        query._id = +query.id;
-        delete query.id;
-    }
+    var query = _.pick(req.query, "category", "name");
 
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
@@ -40,20 +31,7 @@ var getProducts = function (req, res) {
         }
         const db = client.db('Store');
 
-        db.collection('product')
-            .aggregate([
-                {
-                    "$lookup": {
-                        "from": "category",
-                        "localField": "category",
-                        "foreignField": "_id",
-                        "as": "category"
-                    }
-                },
-                { "$match": query }
-            ])
-            .skip(pageNum * perPage - perPage)
-            .limit(perPage)
+        db.collection('products').find(query)
             .toArray().then((docs) => {
                 res.send(docs);
             })
@@ -131,7 +109,6 @@ var putProduct = function (req, res) {
 
 var deleteProduct = function (req, res) {
     var id = req.params.id;
-    console.log(id);
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
             console.log("We are connected");

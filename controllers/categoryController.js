@@ -15,8 +15,9 @@ var getCategory = function (req, res) {
         }
         const db = client.db('Store');
 
-        db.collection('category').find(name).toArray()
+        db.collection('categories').find(name).toArray()
             .then((docs) => {
+                console.log('lalal', docs);
                 res.send(docs)
             })
             .catch((e) => {
@@ -38,7 +39,7 @@ var postCategory = function (req, res) {
 
         getValueForNextSequence('category_id', function (id) {
             db.collection('category').insertOne({
-                "_id": (+id+1),
+                "_id": (+id + 1),
                 'name': body.name,
                 'description': body.description
             }).then((cat) => {

@@ -1,22 +1,16 @@
 var { mongoose } = require("../db/mongoose");
 
 var Purchase = mongoose.model("Purchase", {
-	userName: {
+	username: {
 		type: String,
 		required: true
 	},
-	quantity: {
-		type: Number,
-		required: true
-	},
-	productId: {
-		type: Number,
-		required: true
-	},
-	purchaseDate: {
-		type: Date,
-		required: true
-	}
+	purchase: [
+		{
+			name: String,
+			quantity: Number
+		}
+	]
 });
 
 module.exports = {

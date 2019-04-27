@@ -32,9 +32,8 @@ var getUsers = function (req, res) {
 
 };
 
-//NOT IMPLEMENTED AUTH YET!!!!
 var postUser = function (req, res) {
-    var body = _.pick(req.body, ['email', 'status', 'password', 'username', 'roles']);
+    var body = _.pick(req.body, ['email', , 'password', 'username', 'roles']);
 
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(body.password, salt, (err, hash) => {

@@ -4,12 +4,14 @@ user routes
 var express = require('express');
 var router = express.Router();
 
-var {authenticate} = require('../middleware/authenticate');
-var {authenticateAdmin} = require('../middleware/authenticateAdmin');
+var { authenticate } = require('../middleware/authenticate');
+var { authenticateAdmin } = require('../middleware/authenticateAdmin');
 
 var userCtrl = require('../controllers/userController.js');
 
-router.get('/', authenticate, userCtrl.getUsers);
+// router.get('/', authenticate, userCtrl.getUsers);
+router.get('/', userCtrl.getUsers);
+
 
 router.post('/', userCtrl.postUser);
 
