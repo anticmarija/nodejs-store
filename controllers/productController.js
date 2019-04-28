@@ -1,5 +1,6 @@
 const mongoDBPath = "mongodb://localhost:27017/Store";
 const _ = require('lodash');
+var mongo = require('mongodb');
 
 var MongoClient = require('mongodb');
 var getValueForNextSequence = require('../util/util').getValueForNextSequence;
@@ -23,7 +24,12 @@ var countProducts = function (req, res) {
 }
 
 var getProducts = function (req, res) {
-    var query = _.pick(req.query, "category", "name");
+    var query = _.pick(req.query, "category", "name", "id");
+
+    var query1 = query;
+    if (query.id) {
+        query1 = { "_id": new mongo.ObjectID(query.id) }
+    }
 
     MongoClient.connect(mongoDBPath, function (err, client) {
         if (!err) {
@@ -31,7 +37,7 @@ var getProducts = function (req, res) {
         }
         const db = client.db('Store');
 
-        db.collection('products').find(query)
+        db.collection('products').find(query1)
             .toArray().then((docs) => {
                 res.send(docs);
             })
