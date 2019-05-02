@@ -14,8 +14,8 @@ var getPurchase = function (req, res) {
 }
 
 var postPurchase = function (req, res) {
-    var body = _.pick(req.body, ['username', 'purchase']);
-    var purchase = new Purchase(req.body);
+    // var body = _.pick(req.body, ['username', 'purchase']);
+    var purchase = new Purchase({ username: req.user.username, purchase: req.body.purchase });
 
     purchase.save().then(() => {
 
