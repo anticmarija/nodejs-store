@@ -2,8 +2,7 @@ var { Purchase } = require('../models/purchase');
 var _ = require('lodash');
 
 var getPurchase = function (req, res) {
-    var query = _.pick(req.query, 'username');
-    Purchase.find(query)
+    Purchase.find({ username: req.user.username })
         .then((data) => {
             res.json({
                 data
